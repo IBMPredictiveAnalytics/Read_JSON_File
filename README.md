@@ -1,7 +1,7 @@
 # Read-JSON-File
 ###Read an array of JSON objects into a SPSS Modeler Table.
 
-This SPSS Modeler ‘source’ node allows you to import data from a JSON array. This node parses the data from a JSON file and puts it in a table that can be used in SPSS. 
+This SPSS Modeler ‘source’ node allows you to import data from a JSON array. This node parses the data from a JSON file and puts it in a table that can be used in SPSS
 The array is expanded to fit in a SPSS table. See Example for more information.
 
 

@@ -1,15 +1,15 @@
-# Publish-to-ArcGIS
-###Publish your SPSS analysis to Esri ArcGIS platform.
+# Read-JSON-File
+###Read an array of JSON objects into a SPSS Modeler Table.
 
-Map your IBM SPSS data in Esri® ArcGIS Online.   Export, transfer, load, your data for map visualization and deeper geospatial analytics.   This node relies on the Requests API. 
+This SPSS Modeler ‘source’ node allows you to import data from a JSON array. This node parses the data from a JSON file and puts it in a table that can be used in SPSS. 
+The array is expanded to fit in a SPSS table. See Example for more information.
 
-![Map](https://raw.githubusercontent.com/IBMPredictiveAnalytics/Publish-to-ArcGIS/master/Screenshot/Illustration1.png)
-![Map](https://raw.githubusercontent.com/IBMPredictiveAnalytics/Publish-to-ArcGIS/master/Screenshot/Illustration3.PNG)
-![Map](https://raw.githubusercontent.com/IBMPredictiveAnalytics/Publish-to-ArcGIS/master/Screenshot/Illustration2.png)
 
-Check some live demos here:
-- [Geospatial Analysis on Twitter Data in the Esri Dev Summit 2015][10]
-- [Visualization of Crime Prediction ][12]
+![Map](https://raw.githubusercontent.com/IBMPredictiveAnalytics/Read-JSON-File/master/Screenshot/Illustration1_UserInput.png)
+![Map](https://raw.githubusercontent.com/IBMPredictiveAnalytics/Read-JSON-File/master/Screenshot/Illustration2_DialogBox.png)
+![Map](https://raw.githubusercontent.com/IBMPredictiveAnalytics/Read-JSON-File/master/Screenshot/Illustration3_OutputTable.PNG)
+
+
 
 ---
 Requirements
@@ -32,11 +32,9 @@ Installation instructions
 R Packages used
 ----
 The R packages will be installed the first time the node is used as long as an Internet connection is available.
-- [RCurl][4]
+- [RJSONIO][4]
 - [plyr][11]
-- [httr][13]
-- [rjson][14]
-
+ 
 ---
 Documentation and samples
 ----
@@ -60,12 +58,7 @@ Contributors
 [1]: http://www.apache.org/licenses/LICENSE-2.0.html
 [2]:https://developer.ibm.com/predictiveanalytics/downloads/#tab2
 [3]:https://github.com/IBMPredictiveAnalytics/PlotGeospatialData/raw/master/Source%20code/plotSpatialData.cfe
-[4]:https://cran.r-project.org/web/packages/RCurl/
-[5]:https://github.com/IBMPredictiveAnalytics/Publish-to-ArcGIS/raw/master/Documentation/PushToArcGIS-SPSSModelerExtension.pdf
-[6]:https://github.com/IBMPredictiveAnalytics/Publish-to-ArcGIS/tree/master/Example
-[10]:https://developer.ibm.com/predictiveanalytics/2015/03/11/tweets-during-esri-dev-summit-and-bnp-paribas-open/
+[4]:http://cran.r-project.org/web/packages/RJSONIO
+[5]:https://github.com/IBMPredictiveAnalytics/Read-JSON-File/blob/master/Documentation/ImportJSONFile-SPSSModelerExtension.pdf
+[6]:https://github.com/IBMPredictiveAnalytics/Read-JSON-File/tree/master/Example
 [11]:https://cran.r-project.org/web/packages/plyr/
-[12]:https://developer.ibm.com/predictiveanalytics/2015/03/11/crime-prediction-using-ibm-spss-modeler-and-arcgis/
-[13]:https://cran.r-project.org/web/packages/httr/
-[14]:https://cran.r-project.org/web/packages/rjson/
-[20]:https://www.youtube.com/watch?v=M__XUbiWf30

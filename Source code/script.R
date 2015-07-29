@@ -1,150 +1,89 @@
-library(RCurl)
-library(plyr)
-library(httr)
-library(rjson)
+# 'JSON Import' Node v1.0 for IBM SPSS Modeler
 
-username<-'%%username%%'
-password<-'%%password%%'
-tags<-'%%tags%%'
-itemName<-'%%itemname%%'
-XField<-'%%latitude%%'
-YField<-'%%longitude%%'
+# 'RJSONIO' package created by Duncan Temple Lang - http://cran.r-project.org/web/packages/RJSONIO
+# 'plyr' package created by Hadley Wickham http://cran.r-project.org/web/packages/plyr
 
-#CSV Preparation
-csv<-modelerData
-write.csv(csv,"tempCSV.csv")
-CSV1<-"tempCSV.csv"
+# Node developer: Danil Savine - IBM Extreme Blue 2014
+# Description: This node allows you to import into SPSS a table data from  a JSON.
 
-#Generate Token
-url = "https://arcgis.com/sharing/rest/generateToken"
-data = list('username'= username,
-            'password'= password,
-            'referer' = 'http://arcgis.com',
-            'expiration' = 1209600,
-            'f'= 'json')
-r<-POST(url,body = data)
-content(r)
-x <- fromJSON(content(r))
-token<-x$token
-
-#Get Info - Short
-root <- "http://www.arcgis.com/sharing/rest/portals/self?f=json&token="
-u <- paste(root,token, sep = "")
-r <- getURL(u)
-x <- fromJSON((r))
-short<-x$urlKey
-
-
-#Upload Data
-uploadURL <- paste('http://',short,'.maps.arcgis.com/sharing/rest/content/users/',sep = "")
-url <- paste(uploadURL,username, "/addItem?token=", token,"&f=json",sep = "")
-data = list(multipart= 'true',
-            filename = itemName,
-            type='CSV')
-r<-POST(url,body = data)
-x <- fromJSON((content(r)))
-ItemID<-x$id
-
-
-
-#addPart
-data<-read.csv("Data1.csv")
-URL1 <- paste('http://',short,'.maps.arcgis.com/sharing/rest/content/users/',username,'/items/',ItemID,'/addPart?token=',token,'&f=json',sep = "")
-URL<-paste(URL1,"&file=",CSV1,"&partNum=",1,sep="")
-k<-POST(URL, body=list(file=upload_file(CSV1),format='CSV'))
-#content(k)
-
-
-#Commit
-commitURL <- paste('http://',short,'.maps.arcgis.com/sharing/rest/content/users/',username,'/items/',ItemID,'/commit?f=json&token=',token,sep = "")
-t <- getURL(commitURL)
-#t  
-
-#Status Test CSV
-Type<-"CSV"
-accepted<-'non'
-while (accepted != 'completed'){
-URL <- paste('http://',short,'.maps.arcgis.com/sharing/rest/content/users/',username,'/items/',ItemID,'/status?f=json&token=',token,sep = "")
-x <- getURL(URL)
-x <- fromJSON(((x)))
-accepted<-x$statusMessage
-print(accepted)
-Sys.sleep(5)
+# Install function for packages    
+packages <- function(x){
+  x <- as.character(match.call()[[2]])
+  if (!require(x,character.only=TRUE)){
+    install.packages(pkgs=x,repos="http://cran.r-project.org")
+    require(x,character.only=TRUE)
+  }
 }
 
+#  packages
+packages(RJSONIO)
+packages(plyr)
 
 
-#UpdateItem
-
-URL <- paste('http://',short,'.maps.arcgis.com/sharing/content/users/',username,'/items/',ItemID,'/update?f=json&token=',token,sep = "")
-filename=CSV1
-data = list(title= itemName,
-            tags= tags,
-            filename= filename,
-            typeKeywords= 'CSV',
-            type= 'CSV')
-w<-POST(URL,body = data)
-#content(w)
-
-
-
-
-#Analyze CSV
-URL <- paste('http://www.arcgis.com/sharing/rest/content/features/analyze?token=',token,sep = "")
-CSVID=ItemID
-FileName=CSV1
-data = list('f'= 'JSON',
-            'itemid'= CSVID,
-            'file'= FileName,
-            'filetype'='csv')
-a<-POST(URL,body = data)
-content(a)
-x <- fromJSON((content(a)))
-analyzed<-x$publishParameters
-#analyzed
-
-
-
-#Publish service
-URL <- paste('http://',short,'.maps.arcgis.com/sharing/rest/content/users/',username,'/publish',sep = "")
-publishParams<-analyzed
-publishParams$name = itemName
-publishParams$locationType = 'coordinates'
-publishParams$latitudeFieldName = XField
-publishParams$longitudeFieldName = YField
-query_dict = list(
-  'itemID'= ItemID,
-  'filetype'= 'csv',
-  'f'= 'json',
-  'token'= token,
-  'publishParameters'=publishParams)
-query_dict$publishParameters=toJSON(query_dict$publishParameters)
-a<-POST(URL,body = query_dict)
-a <- fromJSON((content(a)))
-elements<-a$services[[1]]
-serviceItemId<-elements$serviceItemId
-jobId<-elements$jobId
-serviceurl<-elements$serviceurl
-serviceurl
-
-
-
-#Status Test CSV
-accepted<-'non'
-while (accepted != 'completed'){
-  URL <- paste('http://',short,'.maps.arcgis.com/sharing/rest/content/users/',username,'/items/',ItemID,'/status?jobid=',jobId,'&f=json&token=',token,sep = "")
-  x <- getURL(URL)
-  x <- fromJSON(((x)))
-  accepted<-x$status
-  Sys.sleep(5)
-  print(accepted)
+### This function is used to generate automatically the dataModel
+getMetaData <- function (data) {
+  if (dim(data)[1]<=0) {
+    
+    print("Warning : modelerData has no line, all fieldStorage fields set to strings")
+    getStorage <- function(x){return("string")}
+    
+  } else {
+    
+    getStorage <- function(x) {
+      res <- NULL
+      #if x is a factor, typeof will return an integer so we treat the case on the side
+      if(is.factor(x)) {
+        res <- "string"
+      } else {
+        res <- switch(typeof(unlist(x)),
+                      integer = "integer",
+                      double = "real",
+                      character = "string",
+                      "string")
+      }
+      return (res)
+    }
+  }
+  
+  col = vector("list", dim(data)[2])
+  for (i in 1:dim(data)[2]) {
+    col[[i]] <- c(fieldName=names(data[i]),
+                  fieldLabel="",
+                  fieldStorage=getStorage(data[i]),
+                  fieldMeasure="",
+                  fieldFormat="",
+                  fieldRole="")
+  }
+  mdm<-do.call(cbind,col)
+  mdm<-data.frame(mdm)
+  return(mdm)
 }
 
+# From JSON to a list
+txt <- readLines('%%path%%')
+formatedtxt <- paste(txt, collapse = '')
+json.list <- fromJSON(formatedtxt)
 
-#Test Query
-URL <- paste(serviceurl,'/0/query?where=1=1&returnCountOnly=True&f=json&token=',token,sep = "")
-x <- getURL(URL)
-x <- fromJSON(((x)))
-count<-x$count
-print("count:")
-print(count)
+# Apply path to json.list
+if(strsplit(x='%%isPath%%', split='\n' ,fixed=TRUE)[[1]][1]) {
+  path.list <- strsplit(x='%%path.to.array%%', split=',')
+  i = 1
+  while(i<length(path.list)+1){
+    json.list <- json.list[[path.list[[i]]]]
+    i <- i+1
+  }
+}
+
+# From list to dataframe via unlisted json
+i <-1
+filled <- data.frame()
+while(i < length(json.list)+ 1){
+  unlisted.json <- unlist(json.list[[i]])
+  to.fill <- data.frame(t(as.data.frame(unlisted.json, row.names = names(unlisted.json))), stringsAsFactors=FALSE)
+  filled <- rbind.fill(filled,to.fill)
+  i <-  1 + i
+}
+
+# Export to SPSS Modeler Data
+modelerData <- filled
+modelerDataModel <- getMetaData(modelerData)

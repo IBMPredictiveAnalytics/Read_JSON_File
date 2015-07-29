@@ -1,0 +1,40 @@
+{
+  "id_array":[
+    {
+      "_id": "53ea1d4734e8189d0385473b",
+      "age": 26,
+      "name": "Karyn Craig",
+      "likes": [
+        "cats",
+        "sleeping"
+      ],
+      "friends": [
+        {
+          "id": 0,
+          "name": "Lane Castaneda"
+        },
+        {
+          "id": 1,
+          "name": "Cline Mccoy"
+        }
+      ]
+    },
+    {
+      "_id": "53ea19146bc5d2192ef92733",
+      "name": "Connie Barron",
+      "isActive": false,
+      "weight": 61.345,
+      "likes": [
+        "dogs",
+        "jogging",
+        "music"
+      ],
+      "friends": [
+        {
+          "id": 0,
+          "name": "Claire Phelps"
+        }  
+      ]
+    }
+  ]
+}

@@ -57,7 +57,7 @@ Contributors
 
 [1]: http://www.apache.org/licenses/LICENSE-2.0.html
 [2]:https://developer.ibm.com/predictiveanalytics/downloads/#tab2
-[3]:https://github.com/IBMPredictiveAnalytics/PlotGeospatialData/raw/master/Source%20code/plotSpatialData.cfe
+[3]:https://github.com/IBMPredictiveAnalytics/Read-JSON-File/blob/master/Source%20code/readJSON.cfe
 [4]:http://cran.r-project.org/web/packages/RJSONIO
 [5]:https://github.com/IBMPredictiveAnalytics/Read-JSON-File/blob/master/Documentation/ImportJSONFile-SPSSModelerExtension.pdf
 [6]:https://github.com/IBMPredictiveAnalytics/Read-JSON-File/tree/master/Example

@@ -64,15 +64,21 @@ txt <- readLines('%%path%%')
 formatedtxt <- paste(txt, collapse = '')
 json.list <- fromJSON(formatedtxt)
 
+
 # Apply path to json.list
 if(strsplit(x='%%isPath%%', split='\n' ,fixed=TRUE)[[1]][1]) {
-  path.list <- strsplit(x='%%path.to.array%%', split=',')
+  path.list <- unlist(strsplit(x='%%path.to.array%%', split=','))
   i = 1
   while(i<length(path.list)+1){
-    json.list <- json.list[[path.list[[i]]]]
-    i <- i+1
+    if(is.null(getElement(json.list, path.list[i]))){
+      json.list <- json.list[[1]] #Serves as catch statement- prior version of extension failed at this point
+    }else{
+      json.list <- getElement(json.list, path.list[i])
+      i <- i+1
+    }
   }
 }
+
 
 # From list to dataframe via unlisted json
 i <-1
